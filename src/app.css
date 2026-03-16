@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #008080;
+  --win-bg: #c0c0c0;
+  --win-border-light: #ffffff;
+  --win-border-dark: #808080;
+  --win-border-darker: #404040;
+  --titlebar-bg: #000080;
+  --titlebar-text: #ffffff;
+  --text: #000000;
+  --accent: #000080;
+  --font-main: 'Share Tech Mono', monospace;
+  --font-display: 'VT323', monospace;
+  --scanline: rgba(0,0,0,0.03);
+}
+
+html, body {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: var(--font-main);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--scanline) 0px,
+    var(--scanline) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanroll 8s linear infinite;
+}
+
+@keyframes scanroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+.win95 {
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-border-light);
+  border-left: 2px solid var(--win-border-light);
+  border-right: 2px solid var(--win-border-darker);
+  border-bottom: 2px solid var(--win-border-darker);
+  box-shadow: inset -1px -1px 0 var(--win-border-dark),
+              inset 1px 1px 0 var(--win-border-light);
+}
+
+.titlebar {
+  background: var(--titlebar-bg);
+  color: var(--titlebar-text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.titlebar-btns {
+  display: flex;
+  gap: 2px;
+}
+
+.titlebar-btn {
+  width: 16px;
+  height: 14px;
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-border-light);
+  border-left: 1px solid var(--win-border-light);
+  border-right: 1px solid var(--win-border-darker);
+  border-bottom: 1px solid var(--win-border-darker);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+.btn95 {
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-border-light);
+  border-left: 2px solid var(--win-border-light);
+  border-right: 2px solid var(--win-border-darker);
+  border-bottom: 2px solid var(--win-border-darker);
+  font-family: var(--font-main);
+  font-size: 13px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: filter 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn95:active {
+  border-top: 2px solid var(--win-border-darker);
+  border-left: 2px solid var(--win-border-darker);
+  border-right: 2px solid var(--win-border-light);
+  border-bottom: 2px solid var(--win-border-light);
+  transform: translate(1px, 1px);
+}
+
+.btn95:hover {
+  filter: brightness(1.05);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink { animation: blink 1s step-end infinite; }
+
+@keyframes glitch {
+  0%   { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+  10%  { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+  20%  { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 0); }
+  30%  { clip-path: inset(10% 0 80% 0); transform: translate(1px, 0); }
+  40%  { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 0); }
+  50%  { clip-path: inset(20% 0 60% 0); transform: translate(2px, 0); }
+  100% { clip-path: inset(0 0 0 0); transform: translate(0, 0); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-3deg); }
+  75%       { transform: rotate(3deg); }
+}
+
+@keyframes fillBar {
+  from { width: 0%; }
+  to   { width: var(--target-w); }
+}

@@ -1,0 +1,32 @@
+export const t = {
+  nl: {
+    tagline: "Student die het meeste uit z'n leven wil halen — geobsedeerd door tech.",
+    about_title: "Over mij",
+    about_text: "Hey, ik ben Milan. IoT-student, tech-nerd en eeuwige experimenteerder. Als er iets gebouwd, gekraakt of geoptimaliseerd kan worden, ben ik erbij. Van homedashboards tot Discord bots — ik doe het gewoon.",
+    projects_title: "Projecten",
+    skills_title: "Skills",
+    contact_title: "Contact",
+    github: "GitHub",
+    instagram: "Instagram",
+    email: "E-mail",
+    boot: "Opstarten...",
+    welcome: "Welkom op mijn portfolio",
+    loading: "Laden...",
+    projects_soon: "Projecten volgen binnenkort.",
+  },
+  en: {
+    tagline: "Student squeezing everything out of life — obsessed with tech.",
+    about_title: "About me",
+    about_text: "Hey, I'm Milan. IoT student, tech nerd and eternal tinkerer. If something can be built, hacked or optimized, I'm on it. From home dashboards to Discord bots — I just do it.",
+    projects_title: "Projects",
+    skills_title: "Skills",
+    contact_title: "Contact",
+    github: "GitHub",
+    instagram: "Instagram",
+    email: "Email",
+    boot: "Booting...",
+    welcome: "Welcome to my portfolio",
+    loading: "Loading...",
+    projects_soon: "Projects coming soon.",
+  }
+};
