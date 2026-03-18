@@ -38,8 +38,7 @@
     { name: 'IoT / Hardware', pct: 65 },
   ];
 
-  // Projects placeholder — hidden until Milan fills them in
-  const projects = []; // add { title, desc, url, tags[] } objects here
+  const projects = [];
 
   onMount(async () => {
     T = getT();
@@ -123,13 +122,6 @@
       </div>
       <div class="taskbar-clock">
         {new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-      </div>
-    </div>
-
-    <div class="marquee-wrap">
-      <div class="marquee-inner">
-        ★ MILAN DEWAELE ★ MILAN OS v2.6 ★ IoT STUDENT ★ TECH NERD ★ DAMME, BE ★ ALLES EENS GEPROBEERD ★ &nbsp;&nbsp;
-        ★ MILAN DEWAELE ★ MILAN OS v2.6 ★ IoT STUDENT ★ TECH NERD ★ DAMME, BE ★ ALLES EENS GEPROBEERD ★
       </div>
     </div>
 
@@ -341,7 +333,7 @@
 
 .desktop {
   min-height: 100vh;
-  padding: 8px 12px 70px;
+  padding: 20px 24px 80px;
   opacity: 0;
   transform: scale(0.98);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -399,34 +391,16 @@
   white-space: nowrap;
 }
 
-.marquee-wrap {
-  overflow: hidden;
-  background: var(--titlebar-bg);
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 18px;
-  padding: 4px 0;
-  margin-bottom: 10px;
-  letter-spacing: 2px;
-  border-top: 2px solid var(--win-border-light);
-  border-bottom: 2px solid var(--win-border-darker);
-}
-
-.marquee-inner {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 22s linear infinite;
-}
-
 .hero-window {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .hero-content {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
   flex-wrap: wrap;
+  padding: 8px 4px;
 }
 
 .hero-avatar-wrap {
@@ -508,7 +482,7 @@
 
 .windows-grid {
   display: grid;
-  gap: 10px;
+  gap: 16px;
 }
 
 .content-window {
@@ -522,17 +496,17 @@
 .about-text {
   font-size: 13px;
   line-height: 1.6;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .about-stats {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .stat-box {
-  padding: 10px 16px;
+  padding: 14px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -556,7 +530,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   animation: floatUp 0.3s ease both;
 }
 
@@ -590,18 +564,18 @@
   font-family: var(--font-display);
   font-size: 22px;
   color: var(--accent);
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .project-card {
   display: block;
-  padding: 10px;
+  padding: 14px;
   text-decoration: none;
   color: inherit;
   transition: transform 0.15s;
@@ -634,16 +608,19 @@
 .contact-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .contact-btn {
   text-decoration: none;
   font-size: 13px;
-  padding: 8px 16px;
+  padding: 10px 20px;
 }
 
 @media (max-width: 500px) {
+  .desktop {
+    padding: 14px 14px 80px;
+  }
   .hero-content {
     flex-direction: column;
     text-align: center;
