@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { fade, fly, slide } from 'svelte/transition';
   import { getT } from '$lib/i18n.js';
 
   let T = {};
@@ -9,6 +10,7 @@
   let visible = false;
   let glitchTitle = false;
   let activeSection = 'about';
+  let prevSection = 'about';
 
   const BOOT_MESSAGES_NL = [
     'MILAN OS v2.6 initialiseren...',
@@ -45,7 +47,7 @@
     const isNL = (navigator.language || '').toLowerCase().startsWith('nl');
     const msgs = isNL ? BOOT_MESSAGES_NL : BOOT_MESSAGES_EN;
     for (let i = 0; i < msgs.length; i++) {
-      await sleep(280 + Math.random() * 180);
+      await sleep(260 + Math.random() * 160);
       bootLines = [...bootLines, msgs[i]];
       bootProgress = Math.round(((i + 1) / msgs.length) * 100);
     }
@@ -60,11 +62,15 @@
   });
 
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-  function setSection(s) { activeSection = s; }
+
+  function setSection(s) {
+    prevSection = activeSection;
+    activeSection = s;
+  }
 </script>
 
 {#if booting}
-  <div class="boot">
+  <div class="boot" transition:fade={{ duration: 300 }}>
     <pre class="boot-logo">
  __  __ _ _
 |  \/  (_) |__ _ _ _
@@ -72,7 +78,9 @@
 |_|  |_|_|_\__,_|_||_|
     </pre>
     <div class="boot-lines">
-      {#each bootLines as line}<div class="boot-line">› {line}</div>{/each}
+      {#each bootLines as line (line)}
+        <div class="boot-line" in:fly={{ y: 10, duration: 200 }}>› {line}</div>
+      {/each}
       <span class="blink">█</span>
     </div>
     <div class="boot-bar-outer">
@@ -86,7 +94,7 @@
   <div class="site" class:visible>
 
     <!-- NAV -->
-    <nav>
+    <nav in:fly={{ y: -20, duration: 400, delay: 100 }}>
       <span class="nav-logo">MD</span>
       <div class="nav-links">
         {#each ['about','skills','projects','contact'] as s}
@@ -101,19 +109,17 @@
 
     <!-- HERO -->
     <header class="hero">
-      <div class="hero-left">
+      <div class="hero-left" in:fly={{ x: -40, duration: 500, delay: 200 }}>
         <p class="hero-eyebrow">// IoT STUDENT — DAMME, BE</p>
         <h1 class:glitch={glitchTitle} data-text="Milan Dewaele">Milan<br>Dewaele</h1>
         <p class="hero-sub">{T.tagline}</p>
         <div class="hero-badges">
-          <span class="tag">IoT</span>
-          <span class="tag">Linux</span>
-          <span class="tag">Docker</span>
-          <span class="tag">Svelte</span>
-          <span class="tag">Node.js</span>
+          {#each ['IoT','Linux','Docker','Svelte','Node.js'] as badge, i}
+            <span class="tag" in:fly={{ y: 12, duration: 250, delay: 400 + i * 60 }}>{badge}</span>
+          {/each}
         </div>
       </div>
-      <div class="hero-right">
+      <div class="hero-right" in:fly={{ x: 40, duration: 500, delay: 300 }}>
         <div class="avatar-frame">
           <img
             src="https://avatars.githubusercontent.com/u/67167142?v=4"
@@ -128,31 +134,25 @@
     <main>
 
       {#if activeSection === 'about'}
-        <section class="section anim-in">
+        <section class="section" in:fly={{ y: 24, duration: 300 }} out:fade={{ duration: 150 }}>
           <div class="section-label">01 — OVER MIJ</div>
           <p class="body-text">{T.about_text}</p>
           <div class="stats-row">
-            <div class="stat panel">
-              <span class="stat-num">11+</span>
-              <span class="stat-label">Public repos</span>
-            </div>
-            <div class="stat panel">
-              <span class="stat-num">27+</span>
-              <span class="stat-label">Total projecten</span>
-            </div>
-            <div class="stat panel">
-              <span class="stat-num">∞</span>
-              <span class="stat-label">Ideeën</span>
-            </div>
+            {#each [{num:'11+',label:'Public repos'},{num:'27+',label:'Total projecten'},{num:'∞',label:'Ideeën'}] as s, i}
+              <div class="stat panel" in:fly={{ y: 16, duration: 260, delay: i * 80 }}>
+                <span class="stat-num">{s.num}</span>
+                <span class="stat-label">{s.label}</span>
+              </div>
+            {/each}
           </div>
         </section>
       {/if}
 
       {#if activeSection === 'skills'}
-        <section class="section anim-in">
+        <section class="section" in:fly={{ y: 24, duration: 300 }} out:fade={{ duration: 150 }}>
           <div class="section-label">02 — SKILLS</div>
           {#each skills as s, i}
-            <div class="skill-row" style="animation-delay:{i * 70}ms">
+            <div class="skill-row" in:fly={{ x: -20, duration: 260, delay: i * 70 }}>
               <span class="skill-name">{s.name}</span>
               <div class="skill-track">
                 <div class="skill-fill" style="--target-w:{s.pct}%; animation-delay:{i * 70 + 150}ms"></div>
@@ -164,14 +164,15 @@
       {/if}
 
       {#if activeSection === 'projects'}
-        <section class="section anim-in">
+        <section class="section" in:fly={{ y: 24, duration: 300 }} out:fade={{ duration: 150 }}>
           <div class="section-label">03 — PROJECTEN</div>
           {#if projects.length === 0}
-            <p class="soon">COMING SOON <span class="blink">█</span></p>
+            <p class="soon" in:fade={{ duration: 400 }}>COMING SOON <span class="blink">█</span></p>
           {:else}
             <div class="projects-grid">
-              {#each projects as p}
-                <a href={p.url} target="_blank" rel="noopener" class="project-card panel">
+              {#each projects as p, i}
+                <a href={p.url} target="_blank" rel="noopener" class="project-card panel"
+                   in:fly={{ y: 16, duration: 260, delay: i * 80 }}>
                   <div class="project-title">{p.title}</div>
                   <p class="project-desc">{p.desc}</p>
                   <div class="project-tags">
@@ -185,14 +186,16 @@
       {/if}
 
       {#if activeSection === 'contact'}
-        <section class="section anim-in">
+        <section class="section" in:fly={{ y: 24, duration: 300 }} out:fade={{ duration: 150 }}>
           <div class="section-label">04 — CONTACT</div>
           <div class="contact-row">
-            <a href="https://github.com/milanwdewaele" target="_blank" rel="noopener" class="btn">
+            <a href="https://github.com/milanwdewaele" target="_blank" rel="noopener" class="btn"
+               in:fly={{ y: 12, duration: 260, delay: 80 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
               GitHub
             </a>
-            <a href="https://www.instagram.com/milanwdewaele" target="_blank" rel="noopener" class="btn-outline">
+            <a href="https://www.instagram.com/milanwdewaele" target="_blank" rel="noopener" class="btn-outline"
+               in:fly={{ y: 12, duration: 260, delay: 160 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.31.975.976 1.248 2.243 1.31 3.609.058 1.265.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.062 1.366-.335 2.633-1.31 3.608-.975.975-2.242 1.248-3.608 1.31-1.266.058-1.646.069-4.85.069s-3.584-.011-4.849-.069c-1.366-.062-2.633-.335-3.608-1.31-.975-.975-1.248-2.242-1.31-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.849c.062-1.366.335-2.633 1.31-3.608C4.518 2.499 5.785 2.225 7.151 2.163 8.416 2.105 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.014 7.052.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.052.014 8.332 0 8.741 0 12c0 3.259.014 3.668.072 4.948.085 1.855.601 3.697 1.942 5.038 1.341 1.341 3.183 1.857 5.038 1.942C8.332 23.986 8.741 24 12 24s3.668-.014 4.948-.072c1.855-.085 3.697-.601 5.038-1.942 1.341-1.341 1.857-3.183 1.942-5.038.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.085-1.855-.601-3.697-1.942-5.038C20.645.673 18.803.157 16.948.072 15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
               Instagram
             </a>
@@ -203,7 +206,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer>
+    <footer in:fade={{ duration: 400, delay: 600 }}>
       <span>© {new Date().getFullYear()} Milan Dewaele</span>
       <span class="footer-mono">MILAN OS v2.6</span>
     </footer>
@@ -229,7 +232,7 @@
 .boot-logo {
   font-size: clamp(10px, 2vw, 15px);
   line-height: 1.3;
-  color: #ff3c00;
+  color: #0047ff;
 }
 
 .boot-lines {
@@ -244,30 +247,29 @@
 .boot-bar-outer {
   width: min(480px, 90vw);
   height: 6px;
-  background: #222;
-  border: 1px solid #444;
+  background: #1a1a2e;
+  border: 1px solid #333;
 }
 
 .boot-bar-inner {
   height: 100%;
-  background: #ff3c00;
+  background: #0047ff;
   transition: width 0.3s ease;
+  box-shadow: 0 0 8px #0047ff88;
 }
 
-.boot-pct { font-size: 12px; color: #888; }
+.boot-pct { font-size: 12px; color: #666; }
 
-/* SITE */
 .site {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.5s ease;
 }
 
 .site.visible { opacity: 1; }
 
-/* NAV */
 nav {
   display: flex;
   align-items: center;
@@ -286,12 +288,12 @@ nav {
   font-weight: 900;
   letter-spacing: -1px;
   color: #0a0a0a;
+  transition: color 0.2s;
 }
 
-.nav-links {
-  display: flex;
-  gap: 4px;
-}
+.nav-logo:hover { color: #0047ff; }
+
+.nav-links { display: flex; gap: 4px; }
 
 .nav-btn {
   background: transparent;
@@ -303,26 +305,26 @@ nav {
   cursor: pointer;
   letter-spacing: 1px;
   color: #0a0a0a;
-  transition: background 0.1s, border-color 0.1s;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 .nav-btn:hover {
   background: #0a0a0a;
   color: #f5f0e8;
+  transform: translateY(-1px);
 }
 
 .nav-btn.active {
-  background: #ff3c00;
+  background: #0047ff;
   color: #fff;
   border-color: #0a0a0a;
 }
 
-/* HERO */
 .hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 64px 32px 48px;
+  padding: 64px 32px 56px;
   gap: 40px;
   flex-wrap: wrap;
   border-bottom: 3px solid #0a0a0a;
@@ -331,7 +333,7 @@ nav {
 .hero-eyebrow {
   font-size: 12px;
   letter-spacing: 2px;
-  color: #ff3c00;
+  color: #0047ff;
   margin-bottom: 16px;
   font-weight: 700;
 }
@@ -356,30 +358,26 @@ h1.glitch::after {
 }
 
 h1.glitch::before {
-  color: #ff3c00;
+  color: #0047ff;
   animation: glitch 0.5s steps(1) forwards;
   z-index: 1;
 }
 
 h1.glitch::after {
-  color: #0033ff;
+  color: #ff3c00;
   animation: glitch 0.5s steps(1) 0.05s forwards;
   z-index: 2;
 }
 
 .hero-sub {
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
   max-width: 480px;
   margin-bottom: 24px;
   color: #333;
 }
 
-.hero-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+.hero-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .tag {
   font-family: 'Space Mono', monospace;
@@ -390,41 +388,54 @@ h1.glitch::after {
   background: transparent;
   letter-spacing: 1px;
   text-transform: uppercase;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.tag:hover {
+  background: #0047ff;
+  color: #fff;
+  border-color: #0047ff;
+  transform: translateY(-2px);
 }
 
 .avatar-frame {
   border: 3px solid #0a0a0a;
-  box-shadow: 8px 8px 0 #0a0a0a;
+  box-shadow: 8px 8px 0 #0047ff;
   flex-shrink: 0;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.avatar-frame:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 11px 11px 0 #0047ff;
 }
 
 .avatar {
   width: 200px;
   height: 200px;
   display: block;
-  filter: grayscale(20%);
+  filter: grayscale(15%);
+  transition: filter 0.3s ease;
 }
 
-/* MAIN */
+.avatar-frame:hover .avatar { filter: grayscale(0%); }
+
 main {
   flex: 1;
-  padding: 48px 32px;
+  padding: 52px 32px;
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
 }
-
-.section { animation: floatUp 0.3s ease both; }
-.anim-in { animation: floatUp 0.25s ease both; }
 
 .section-label {
   font-family: 'Space Mono', monospace;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: #ff3c00;
+  color: #0047ff;
   margin-bottom: 28px;
-  border-left: 4px solid #ff3c00;
+  border-left: 4px solid #0047ff;
   padding-left: 10px;
 }
 
@@ -435,11 +446,7 @@ main {
   max-width: 640px;
 }
 
-.stats-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; }
 
 .stat {
   padding: 20px 28px;
@@ -453,8 +460,11 @@ main {
   font-size: 40px;
   font-weight: 900;
   line-height: 1;
-  color: #ff3c00;
+  color: #0047ff;
+  transition: color 0.2s;
 }
+
+.stat:hover .stat-num { color: #0a0a0a; }
 
 .stat-label {
   font-size: 11px;
@@ -463,13 +473,11 @@ main {
   text-transform: uppercase;
 }
 
-/* SKILLS */
 .skill-row {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-bottom: 18px;
-  animation: floatUp 0.3s ease both;
 }
 
 .skill-name {
@@ -484,16 +492,16 @@ main {
 .skill-track {
   flex: 1;
   height: 14px;
-  background: #e8e3db;
+  background: #e8eeff;
   border: 2px solid #0a0a0a;
   overflow: hidden;
 }
 
 .skill-fill {
   height: 100%;
-  background: #0a0a0a;
+  background: #0047ff;
   width: 0%;
-  animation: fillBar 1.1s ease forwards;
+  animation: fillBar 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
 }
 
 .skill-pct {
@@ -501,9 +509,9 @@ main {
   font-weight: 700;
   width: 38px;
   text-align: right;
+  color: #0047ff;
 }
 
-/* PROJECTS */
 .soon {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 28px;
@@ -524,12 +532,6 @@ main {
   padding: 20px;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-
-.project-card:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0 #0a0a0a;
 }
 
 .project-title {
@@ -537,7 +539,10 @@ main {
   font-size: 20px;
   font-weight: 900;
   margin-bottom: 6px;
+  transition: color 0.15s;
 }
+
+.project-card:hover .project-title { color: #0047ff; }
 
 .project-desc {
   font-size: 12px;
@@ -548,7 +553,6 @@ main {
 
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* CONTACT */
 .contact-row {
   display: flex;
   flex-wrap: wrap;
@@ -556,7 +560,6 @@ main {
   padding-top: 8px;
 }
 
-/* FOOTER */
 footer {
   border-top: 3px solid #0a0a0a;
   padding: 18px 32px;
@@ -571,7 +574,7 @@ footer {
 .footer-mono {
   font-weight: 700;
   letter-spacing: 2px;
-  color: #ff3c00;
+  color: #0047ff;
 }
 
 @media (max-width: 600px) {
