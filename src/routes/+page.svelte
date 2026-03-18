@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { fade, fly, slide } from 'svelte/transition';
+  import { fade, fly } from 'svelte/transition';
   import { getT } from '$lib/i18n.js';
 
   let T = {};
@@ -42,6 +42,24 @@
 
   const projects = [];
 
+  const whatIDo = [
+    {
+      icon: '🖥️',
+      title: 'Systems & Infra',
+      desc: 'Linux servers, Proxmox, LXC containers en self-hosted diensten. Als het draait, optimaliseer ik het.'
+    },
+    {
+      icon: '🔧',
+      title: 'IoT & Hardware',
+      desc: 'Van sensor tot dashboard. Microcontrollers, protocollen en alles daartussen.'
+    },
+    {
+      icon: '💻',
+      title: 'Dev & Automatisering',
+      desc: 'Node.js bots, Svelte frontends, bash scripts. Repetitief werk hoort geautomatiseerd te worden.'
+    },
+  ];
+
   onMount(async () => {
     T = getT();
     const isNL = (navigator.language || '').toLowerCase().startsWith('nl');
@@ -62,11 +80,7 @@
   });
 
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-  function setSection(s) {
-    prevSection = activeSection;
-    activeSection = s;
-  }
+  function setSection(s) { prevSection = activeSection; activeSection = s; }
 </script>
 
 {#if booting}
@@ -110,14 +124,10 @@
     <!-- HERO -->
     <header class="hero">
       <div class="hero-left" in:fly={{ x: -40, duration: 500, delay: 200 }}>
-        <p class="hero-eyebrow">// IoT STUDENT — DAMME, BE</p>
+        <p class="hero-eyebrow">// IoT STUDENT — GENT, OOST-VLAANDEREN</p>
         <h1 class:glitch={glitchTitle} data-text="Milan Dewaele">Milan<br>Dewaele</h1>
         <p class="hero-sub">{T.tagline}</p>
-        <div class="hero-badges">
-          {#each ['IoT','Linux','Docker','Svelte','Node.js'] as badge, i}
-            <span class="tag" in:fly={{ y: 12, duration: 250, delay: 400 + i * 60 }}>{badge}</span>
-          {/each}
-        </div>
+        <button class="btn hero-cta" on:click={() => setSection('about')}>Meer over mij →</button>
       </div>
       <div class="hero-right" in:fly={{ x: 40, duration: 500, delay: 300 }}>
         <div class="avatar-frame">
@@ -129,6 +139,43 @@
         </div>
       </div>
     </header>
+
+    <!-- HIGHLIGHT BAR -->
+    <div class="highlight-bar" in:fly={{ y: 20, duration: 400, delay: 400 }}>
+      <div class="highlight-item">
+        <span class="hl-num">11+</span>
+        <span class="hl-label">GitHub repos</span>
+      </div>
+      <div class="hl-divider"></div>
+      <div class="highlight-item">
+        <span class="hl-num">24/7</span>
+        <span class="hl-label">Self-hosted infra</span>
+      </div>
+      <div class="hl-divider"></div>
+      <div class="highlight-item">
+        <span class="hl-num">IoT</span>
+        <span class="hl-label">Student @ Gent</span>
+      </div>
+      <div class="hl-divider"></div>
+      <div class="highlight-item">
+        <span class="hl-num">∞</span>
+        <span class="hl-label">Ideeën</span>
+      </div>
+    </div>
+
+    <!-- WAT IK DOE -->
+    <div class="wat-ik-doe" in:fly={{ y: 24, duration: 400, delay: 500 }}>
+      <div class="wid-header">WAT IK DOE</div>
+      <div class="wid-grid">
+        {#each whatIDo as item, i}
+          <div class="wid-card panel" in:fly={{ y: 20, duration: 300, delay: 600 + i * 100 }}>
+            <span class="wid-icon">{item.icon}</span>
+            <div class="wid-title">{item.title}</div>
+            <p class="wid-desc">{item.desc}</p>
+          </div>
+        {/each}
+      </div>
+    </div>
 
     <!-- CONTENT -->
     <main>
@@ -207,7 +254,7 @@
 
     <!-- FOOTER -->
     <footer in:fade={{ duration: 400, delay: 600 }}>
-      <span>© {new Date().getFullYear()} Milan Dewaele</span>
+      <span>© {new Date().getFullYear()} Milan Dewaele — Gent, Oost-Vlaanderen</span>
       <span class="footer-mono">MILAN OS v2.6</span>
     </footer>
 
@@ -292,7 +339,6 @@ nav {
 }
 
 .nav-logo:hover { color: #0047ff; }
-
 .nav-links { display: flex; gap: 4px; }
 
 .nav-btn {
@@ -305,21 +351,13 @@ nav {
   cursor: pointer;
   letter-spacing: 1px;
   color: #0a0a0a;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
-.nav-btn:hover {
-  background: #0a0a0a;
-  color: #f5f0e8;
-  transform: translateY(-1px);
-}
+.nav-btn:hover { background: #0a0a0a; color: #f5f0e8; transform: translateY(-1px); }
+.nav-btn.active { background: #0047ff; color: #fff; border-color: #0a0a0a; }
 
-.nav-btn.active {
-  background: #0047ff;
-  color: #fff;
-  border-color: #0a0a0a;
-}
-
+/* HERO */
 .hero {
   display: flex;
   align-items: center;
@@ -349,54 +387,25 @@ h1 {
   margin-bottom: 20px;
 }
 
-h1.glitch::before,
-h1.glitch::after {
+h1.glitch::before, h1.glitch::after {
   content: attr(data-text);
   position: absolute;
   top: 0; left: 0;
   width: 100%;
 }
 
-h1.glitch::before {
-  color: #0047ff;
-  animation: glitch 0.5s steps(1) forwards;
-  z-index: 1;
-}
-
-h1.glitch::after {
-  color: #ff3c00;
-  animation: glitch 0.5s steps(1) 0.05s forwards;
-  z-index: 2;
-}
+h1.glitch::before { color: #0047ff; animation: glitch 0.5s steps(1) forwards; z-index: 1; }
+h1.glitch::after  { color: #ff3c00; animation: glitch 0.5s steps(1) 0.05s forwards; z-index: 2; }
 
 .hero-sub {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
   max-width: 480px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   color: #333;
 }
 
-.hero-badges { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.tag {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border: 2px solid #0a0a0a;
-  background: transparent;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-
-.tag:hover {
-  background: #0047ff;
-  color: #fff;
-  border-color: #0047ff;
-  transform: translateY(-2px);
-}
+.hero-cta { margin-top: 4px; }
 
 .avatar-frame {
   border: 3px solid #0a0a0a;
@@ -405,10 +414,7 @@ h1.glitch::after {
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.avatar-frame:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 11px 11px 0 #0047ff;
-}
+.avatar-frame:hover { transform: translate(-3px,-3px); box-shadow: 11px 11px 0 #0047ff; }
 
 .avatar {
   width: 200px;
@@ -420,6 +426,101 @@ h1.glitch::after {
 
 .avatar-frame:hover .avatar { filter: grayscale(0%); }
 
+/* HIGHLIGHT BAR */
+.highlight-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: #0a0a0a;
+  border-bottom: 3px solid #0a0a0a;
+  flex-wrap: wrap;
+}
+
+.highlight-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+  gap: 4px;
+  transition: background 0.15s ease;
+}
+
+.highlight-item:hover { background: #0047ff; }
+
+.hl-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #f5f0e8;
+  line-height: 1;
+}
+
+.hl-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.highlight-item:hover .hl-label { color: #fff; }
+
+.hl-divider {
+  width: 1px;
+  height: 40px;
+  background: #333;
+  flex-shrink: 0;
+}
+
+/* WAT IK DOE */
+.wat-ik-doe {
+  padding: 48px 32px;
+  border-bottom: 3px solid #0a0a0a;
+}
+
+.wid-header {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #0047ff;
+  margin-bottom: 24px;
+  border-left: 4px solid #0047ff;
+  padding-left: 10px;
+}
+
+.wid-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.wid-card {
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wid-icon { font-size: 28px; }
+
+.wid-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.wid-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #444;
+}
+
+/* MAIN */
 main {
   flex: 1;
   padding: 52px 32px;
@@ -439,13 +540,7 @@ main {
   padding-left: 10px;
 }
 
-.body-text {
-  font-size: 15px;
-  line-height: 1.8;
-  margin-bottom: 36px;
-  max-width: 640px;
-}
-
+.body-text { font-size: 15px; line-height: 1.8; margin-bottom: 36px; max-width: 640px; }
 .stats-row { display: flex; gap: 16px; flex-wrap: wrap; }
 
 .stat {
@@ -465,20 +560,9 @@ main {
 }
 
 .stat:hover .stat-num { color: #0a0a0a; }
+.stat-label { font-size: 11px; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
 
-.stat-label {
-  font-size: 11px;
-  margin-top: 4px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.skill-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
-}
+.skill-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 
 .skill-name {
   font-size: 12px;
@@ -504,13 +588,7 @@ main {
   animation: fillBar 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
 }
 
-.skill-pct {
-  font-size: 12px;
-  font-weight: 700;
-  width: 38px;
-  text-align: right;
-  color: #0047ff;
-}
+.skill-pct { font-size: 12px; font-weight: 700; width: 38px; text-align: right; color: #0047ff; }
 
 .soon {
   font-family: 'Space Grotesk', sans-serif;
@@ -521,18 +599,9 @@ main {
   letter-spacing: -1px;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-}
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 16px; }
 
-.project-card {
-  display: block;
-  padding: 20px;
-  text-decoration: none;
-  color: inherit;
-}
+.project-card { display: block; padding: 20px; text-decoration: none; color: inherit; }
 
 .project-title {
   font-family: 'Space Grotesk', sans-serif;
@@ -543,22 +612,24 @@ main {
 }
 
 .project-card:hover .project-title { color: #0047ff; }
-
-.project-desc {
-  font-size: 12px;
-  line-height: 1.5;
-  margin-bottom: 12px;
-  color: #444;
-}
-
+.project-desc { font-size: 12px; line-height: 1.5; margin-bottom: 12px; color: #444; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-.contact-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  padding-top: 8px;
+.tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border: 2px solid #0a0a0a;
+  background: transparent;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
+
+.tag:hover { background: #0047ff; color: #fff; border-color: #0047ff; transform: translateY(-2px); }
+
+.contact-row { display: flex; flex-wrap: wrap; gap: 14px; padding-top: 8px; }
 
 footer {
   border-top: 3px solid #0a0a0a;
@@ -571,18 +642,17 @@ footer {
   color: #f5f0e8;
 }
 
-.footer-mono {
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #0047ff;
-}
+.footer-mono { font-weight: 700; letter-spacing: 2px; color: #0047ff; }
 
 @media (max-width: 600px) {
   nav { padding: 14px 16px; }
   .hero { padding: 36px 16px 32px; flex-direction: column; }
   .avatar { width: 140px; height: 140px; }
   main { padding: 32px 16px; }
-  footer { padding: 14px 16px; }
+  footer { padding: 14px 16px; flex-direction: column; gap: 6px; text-align: center; }
   .skill-name { width: 90px; font-size: 11px; }
+  .wat-ik-doe { padding: 32px 16px; }
+  .highlight-item { padding: 16px 20px; }
+  .hl-divider { display: none; }
 }
 </style>
