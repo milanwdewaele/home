@@ -8,7 +8,7 @@
   let bootLines = [];
   let visible = false;
   let glitchTitle = false;
-  let activeWindow = 'about';
+  let activeSection = 'about';
 
   const BOOT_MESSAGES_NL = [
     'MILAN OS v2.6 initialiseren...',
@@ -44,35 +44,27 @@
     T = getT();
     const isNL = (navigator.language || '').toLowerCase().startsWith('nl');
     const msgs = isNL ? BOOT_MESSAGES_NL : BOOT_MESSAGES_EN;
-
     for (let i = 0; i < msgs.length; i++) {
-      await sleep(320 + Math.random() * 200);
+      await sleep(280 + Math.random() * 180);
       bootLines = [...bootLines, msgs[i]];
       bootProgress = Math.round(((i + 1) / msgs.length) * 100);
     }
-
-    await sleep(500);
+    await sleep(400);
     booting = false;
-    await sleep(80);
+    await sleep(60);
     visible = true;
-
     setInterval(() => {
       glitchTitle = true;
       setTimeout(() => (glitchTitle = false), 600);
-    }, 6000);
+    }, 7000);
   });
 
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
-  function setWindow(w) {
-    activeWindow = w;
-  }
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function setSection(s) { activeSection = s; }
 </script>
 
 {#if booting}
-  <div class="boot-screen">
+  <div class="boot">
     <pre class="boot-logo">
  __  __ _ _
 |  \/  (_) |__ _ _ _
@@ -80,225 +72,164 @@
 |_|  |_|_|_\__,_|_||_|
     </pre>
     <div class="boot-lines">
-      {#each bootLines as line}
-        <div class="boot-line">› {line}</div>
-      {/each}
+      {#each bootLines as line}<div class="boot-line">› {line}</div>{/each}
       <span class="blink">█</span>
     </div>
-    <div class="boot-bar-wrap">
-      <div class="boot-bar" style="width:{bootProgress}%"></div>
+    <div class="boot-bar-outer">
+      <div class="boot-bar-inner" style="width:{bootProgress}%"></div>
     </div>
     <div class="boot-pct">{bootProgress}%</div>
   </div>
 {/if}
 
 {#if !booting}
-  <div class="desktop" class:visible>
+  <div class="site" class:visible>
 
-    <div class="taskbar">
-      <button class="start-btn btn95">
-        <img src="https://avatars.githubusercontent.com/u/67167142?v=4"
-             alt="Milan" width="16" height="16"
-             style="border-radius:2px; image-rendering:pixelated;" />
-        Start
-      </button>
-      <div class="taskbar-mid">
-        {#each ['about','skills','projects','contact'] as tab}
+    <!-- NAV -->
+    <nav>
+      <span class="nav-logo">MD</span>
+      <div class="nav-links">
+        {#each ['about','skills','projects','contact'] as s}
           <button
-            class="taskbar-tab btn95"
-            class:active={activeWindow === tab}
-            on:click={() => setWindow(tab)}
-          >
-            {#if tab === 'about'}📋{/if}
-            {#if tab === 'skills'}⚙️{/if}
-            {#if tab === 'projects'}💾{/if}
-            {#if tab === 'contact'}📡{/if}
-            {T['about_title'] && tab === 'about' ? T.about_title : ''}
-            {T['skills_title'] && tab === 'skills' ? T.skills_title : ''}
-            {T['projects_title'] && tab === 'projects' ? T.projects_title : ''}
-            {T['contact_title'] && tab === 'contact' ? T.contact_title : ''}
-          </button>
+            class="nav-btn"
+            class:active={activeSection === s}
+            on:click={() => setSection(s)}
+          >{s.toUpperCase()}</button>
         {/each}
       </div>
-      <div class="taskbar-clock">
-        {new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-      </div>
-    </div>
+    </nav>
 
-    <div class="hero-window win95">
-      <div class="titlebar">
-        <span>📁 Milan Dewaele — {T.welcome}</span>
-        <div class="titlebar-btns">
-          <div class="titlebar-btn">_</div>
-          <div class="titlebar-btn">□</div>
-          <div class="titlebar-btn">✕</div>
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-left">
+        <p class="hero-eyebrow">// IoT STUDENT — DAMME, BE</p>
+        <h1 class:glitch={glitchTitle} data-text="Milan Dewaele">Milan<br>Dewaele</h1>
+        <p class="hero-sub">{T.tagline}</p>
+        <div class="hero-badges">
+          <span class="tag">IoT</span>
+          <span class="tag">Linux</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Svelte</span>
+          <span class="tag">Node.js</span>
         </div>
       </div>
-      <div class="win-content hero-content">
-        <div class="hero-avatar-wrap">
+      <div class="hero-right">
+        <div class="avatar-frame">
           <img
             src="https://avatars.githubusercontent.com/u/67167142?v=4"
             alt="Milan Dewaele"
-            class="hero-avatar"
+            class="avatar"
           />
-          <div class="avatar-glow"></div>
-        </div>
-        <div class="hero-text">
-          <h1 class:glitch={glitchTitle} data-text="Milan Dewaele">Milan Dewaele</h1>
-          <p class="tagline">{T.tagline}</p>
-          <div class="hero-badges">
-            <span class="badge">IoT</span>
-            <span class="badge">Linux</span>
-            <span class="badge">Docker</span>
-            <span class="badge">Svelte</span>
-            <span class="badge">Node.js</span>
-          </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div class="windows-grid">
+    <!-- CONTENT -->
+    <main>
 
-      {#if activeWindow === 'about'}
-        <div class="content-window win95 anim-in">
-          <div class="titlebar">
-            <span>📋 {T.about_title}</span>
-            <div class="titlebar-btns">
-              <div class="titlebar-btn">_</div>
-              <div class="titlebar-btn">□</div>
-              <div class="titlebar-btn" on:click={() => setWindow('')}>✕</div>
+      {#if activeSection === 'about'}
+        <section class="section anim-in">
+          <div class="section-label">01 — OVER MIJ</div>
+          <p class="body-text">{T.about_text}</p>
+          <div class="stats-row">
+            <div class="stat panel">
+              <span class="stat-num">11+</span>
+              <span class="stat-label">Public repos</span>
+            </div>
+            <div class="stat panel">
+              <span class="stat-num">27+</span>
+              <span class="stat-label">Total projecten</span>
+            </div>
+            <div class="stat panel">
+              <span class="stat-num">∞</span>
+              <span class="stat-label">Ideeën</span>
             </div>
           </div>
-          <div class="win-content">
-            <p class="about-text">{T.about_text}</p>
-            <div class="about-stats">
-              <div class="stat-box win95">
-                <span class="stat-num">11+</span>
-                <span class="stat-label">Public repos</span>
-              </div>
-              <div class="stat-box win95">
-                <span class="stat-num">27+</span>
-                <span class="stat-label">Total projecten</span>
-              </div>
-              <div class="stat-box win95">
-                <span class="stat-num">∞</span>
-                <span class="stat-label">Ideeën</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
       {/if}
 
-      {#if activeWindow === 'skills'}
-        <div class="content-window win95 anim-in">
-          <div class="titlebar">
-            <span>⚙️ {T.skills_title}</span>
-            <div class="titlebar-btns">
-              <div class="titlebar-btn">_</div>
-              <div class="titlebar-btn">□</div>
-              <div class="titlebar-btn" on:click={() => setWindow('')}>✕</div>
-            </div>
-          </div>
-          <div class="win-content">
-            {#each skills as s, i}
-              <div class="skill-row" style="animation-delay:{i * 80}ms">
-                <span class="skill-name">{s.name}</span>
-                <div class="skill-bar-bg win95">
-                  <div
-                    class="skill-bar-fill"
-                    style="--target-w:{s.pct}%; animation-delay:{i * 80 + 200}ms"
-                  ></div>
-                </div>
-                <span class="skill-pct">{s.pct}%</span>
+      {#if activeSection === 'skills'}
+        <section class="section anim-in">
+          <div class="section-label">02 — SKILLS</div>
+          {#each skills as s, i}
+            <div class="skill-row" style="animation-delay:{i * 70}ms">
+              <span class="skill-name">{s.name}</span>
+              <div class="skill-track">
+                <div class="skill-fill" style="--target-w:{s.pct}%; animation-delay:{i * 70 + 150}ms"></div>
               </div>
-            {/each}
-          </div>
-        </div>
+              <span class="skill-pct">{s.pct}%</span>
+            </div>
+          {/each}
+        </section>
       {/if}
 
-      {#if activeWindow === 'projects'}
-        <div class="content-window win95 anim-in">
-          <div class="titlebar">
-            <span>💾 {T.projects_title}</span>
-            <div class="titlebar-btns">
-              <div class="titlebar-btn">_</div>
-              <div class="titlebar-btn">□</div>
-              <div class="titlebar-btn" on:click={() => setWindow('')}>✕</div>
+      {#if activeSection === 'projects'}
+        <section class="section anim-in">
+          <div class="section-label">03 — PROJECTEN</div>
+          {#if projects.length === 0}
+            <p class="soon">COMING SOON <span class="blink">█</span></p>
+          {:else}
+            <div class="projects-grid">
+              {#each projects as p}
+                <a href={p.url} target="_blank" rel="noopener" class="project-card panel">
+                  <div class="project-title">{p.title}</div>
+                  <p class="project-desc">{p.desc}</p>
+                  <div class="project-tags">
+                    {#each p.tags as tag}<span class="tag">{tag}</span>{/each}
+                  </div>
+                </a>
+              {/each}
             </div>
-          </div>
-          <div class="win-content">
-            {#if projects.length === 0}
-              <p class="projects-soon">{T.projects_soon} <span class="blink">█</span></p>
-            {:else}
-              <div class="projects-grid">
-                {#each projects as p}
-                  <a href={p.url} target="_blank" rel="noopener" class="project-card win95">
-                    <div class="project-title">{p.title}</div>
-                    <p class="project-desc">{p.desc}</p>
-                    <div class="project-tags">
-                      {#each p.tags as tag}
-                        <span class="badge">{tag}</span>
-                      {/each}
-                    </div>
-                  </a>
-                {/each}
-              </div>
-            {/if}
-          </div>
-        </div>
+          {/if}
+        </section>
       {/if}
 
-      {#if activeWindow === 'contact'}
-        <div class="content-window win95 anim-in">
-          <div class="titlebar">
-            <span>📡 {T.contact_title}</span>
-            <div class="titlebar-btns">
-              <div class="titlebar-btn">_</div>
-              <div class="titlebar-btn">□</div>
-              <div class="titlebar-btn" on:click={() => setWindow('')}>✕</div>
-            </div>
-          </div>
-          <div class="win-content contact-links">
-            <a href="https://github.com/milanwdewaele" target="_blank" rel="noopener" class="btn95 contact-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-              {T.github}
+      {#if activeSection === 'contact'}
+        <section class="section anim-in">
+          <div class="section-label">04 — CONTACT</div>
+          <div class="contact-row">
+            <a href="https://github.com/milanwdewaele" target="_blank" rel="noopener" class="btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
             </a>
-            <a href="https://www.instagram.com/milanwdewaele" target="_blank" rel="noopener" class="btn95 contact-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.31.975.976 1.248 2.243 1.31 3.609.058 1.265.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.062 1.366-.335 2.633-1.31 3.608-.975.975-2.242 1.248-3.608 1.31-1.266.058-1.646.069-4.85.069s-3.584-.011-4.849-.069c-1.366-.062-2.633-.335-3.608-1.31-.975-.975-1.248-2.242-1.31-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.849c.062-1.366.335-2.633 1.31-3.608C4.518 2.499 5.785 2.225 7.151 2.163 8.416 2.105 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.014 7.052.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.052.014 8.332 0 8.741 0 12c0 3.259.014 3.668.072 4.948.085 1.855.601 3.697 1.942 5.038 1.341 1.341 3.183 1.857 5.038 1.942C8.332 23.986 8.741 24 12 24s3.668-.014 4.948-.072c1.855-.085 3.697-.601 5.038-1.942 1.341-1.341 1.857-3.183 1.942-5.038.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.085-1.855-.601-3.697-1.942-5.038C20.645.673 18.803.157 16.948.072 15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-              </svg>
-              {T.instagram}
+            <a href="https://www.instagram.com/milanwdewaele" target="_blank" rel="noopener" class="btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.31.975.976 1.248 2.243 1.31 3.609.058 1.265.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.062 1.366-.335 2.633-1.31 3.608-.975.975-2.242 1.248-3.608 1.31-1.266.058-1.646.069-4.85.069s-3.584-.011-4.849-.069c-1.366-.062-2.633-.335-3.608-1.31-.975-.975-1.248-2.242-1.31-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.849c.062-1.366.335-2.633 1.31-3.608C4.518 2.499 5.785 2.225 7.151 2.163 8.416 2.105 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.014 7.052.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.052.014 8.332 0 8.741 0 12c0 3.259.014 3.668.072 4.948.085 1.855.601 3.697 1.942 5.038 1.341 1.341 3.183 1.857 5.038 1.942C8.332 23.986 8.741 24 12 24s3.668-.014 4.948-.072c1.855-.085 3.697-.601 5.038-1.942 1.341-1.341 1.857-3.183 1.942-5.038.058-1.28.072-1.689.072-4.948s-.014-3.668-.072-4.948c-.085-1.855-.601-3.697-1.942-5.038C20.645.673 18.803.157 16.948.072 15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+              Instagram
             </a>
           </div>
-        </div>
+        </section>
       {/if}
 
-    </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <span>© {new Date().getFullYear()} Milan Dewaele</span>
+      <span class="footer-mono">MILAN OS v2.6</span>
+    </footer>
+
   </div>
 {/if}
 
 <style>
-.boot-screen {
+.boot {
   position: fixed;
   inset: 0;
-  background: #000;
-  color: #00ff41;
-  font-family: 'Share Tech Mono', monospace;
+  background: #0a0a0a;
+  color: #f5f0e8;
+  font-family: 'Space Mono', monospace;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
   z-index: 1000;
 }
 
 .boot-logo {
-  font-size: clamp(10px, 2vw, 16px);
-  color: #00ff41;
-  text-shadow: 0 0 10px #00ff41;
-  line-height: 1.2;
+  font-size: clamp(10px, 2vw, 15px);
+  line-height: 1.3;
+  color: #ff3c00;
 }
 
 .boot-lines {
@@ -308,325 +239,347 @@
   min-height: 120px;
 }
 
-.boot-line {
-  animation: floatUp 0.2s ease both;
-}
+.boot-line { opacity: 0.85; }
 
-.boot-bar-wrap {
+.boot-bar-outer {
   width: min(480px, 90vw);
-  height: 16px;
-  border: 2px solid #00ff41;
-  background: #001a00;
+  height: 6px;
+  background: #222;
+  border: 1px solid #444;
 }
 
-.boot-bar {
+.boot-bar-inner {
   height: 100%;
-  background: #00ff41;
+  background: #ff3c00;
   transition: width 0.3s ease;
-  box-shadow: 0 0 8px #00ff41;
 }
 
-.boot-pct {
-  font-size: 13px;
-  color: #00ff41;
-}
+.boot-pct { font-size: 12px; color: #888; }
 
-.desktop {
+/* SITE */
+.site {
   min-height: 100vh;
-  padding: 20px 24px 80px;
+  display: flex;
+  flex-direction: column;
   opacity: 0;
-  transform: scale(0.98);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.4s ease;
 }
 
-.desktop.visible {
-  opacity: 1;
-  transform: scale(1);
-}
+.site.visible { opacity: 1; }
 
-.taskbar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 36px;
-  background: var(--win-bg);
-  border-top: 2px solid var(--win-border-light);
+/* NAV */
+nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 6px;
-  z-index: 100;
-  box-shadow: 0 -1px 0 var(--win-border-darker);
+  justify-content: space-between;
+  padding: 20px 32px;
+  border-bottom: 3px solid #0a0a0a;
+  background: #f5f0e8;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-.start-btn {
-  font-weight: bold;
-  white-space: nowrap;
+.nav-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #0a0a0a;
 }
 
-.taskbar-mid {
-  flex: 1;
+.nav-links {
   display: flex;
   gap: 4px;
-  overflow-x: auto;
 }
 
-.taskbar-tab {
+.nav-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  font-family: 'Space Mono', monospace;
   font-size: 12px;
-  white-space: nowrap;
+  font-weight: 700;
+  padding: 6px 14px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  color: #0a0a0a;
+  transition: background 0.1s, border-color 0.1s;
 }
 
-.taskbar-tab.active {
-  border-top: 2px solid var(--win-border-darker);
-  border-left: 2px solid var(--win-border-darker);
-  border-right: 2px solid var(--win-border-light);
-  border-bottom: 2px solid var(--win-border-light);
-  background: #b0b0b0;
+.nav-btn:hover {
+  background: #0a0a0a;
+  color: #f5f0e8;
 }
 
-.taskbar-clock {
-  font-family: var(--font-main);
-  font-size: 12px;
-  padding: 2px 8px;
-  border: 1px inset #808080;
-  white-space: nowrap;
+.nav-btn.active {
+  background: #ff3c00;
+  color: #fff;
+  border-color: #0a0a0a;
 }
 
-.hero-window {
-  margin-bottom: 16px;
-}
-
-.hero-content {
+/* HERO */
+.hero {
   display: flex;
   align-items: center;
-  gap: 28px;
+  justify-content: space-between;
+  padding: 64px 32px 48px;
+  gap: 40px;
   flex-wrap: wrap;
-  padding: 8px 4px;
+  border-bottom: 3px solid #0a0a0a;
 }
 
-.hero-avatar-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.hero-avatar {
-  width: 90px;
-  height: 90px;
-  border: 4px solid var(--win-border-darker);
-  image-rendering: pixelated;
-  display: block;
-  animation: shake 8s ease-in-out infinite;
-}
-
-.avatar-glow {
-  position: absolute;
-  inset: -6px;
-  border: 2px dashed var(--accent);
-  animation: spin 12s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.hero-text h1 {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 6vw, 56px);
-  color: var(--accent);
-  line-height: 1;
-  position: relative;
+.hero-eyebrow {
+  font-size: 12px;
   letter-spacing: 2px;
+  color: #ff3c00;
+  margin-bottom: 16px;
+  font-weight: 700;
 }
 
-.hero-text h1.glitch::before,
-.hero-text h1.glitch::after {
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(56px, 9vw, 100px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -3px;
+  color: #0a0a0a;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+h1.glitch::before,
+h1.glitch::after {
   content: attr(data-text);
   position: absolute;
   top: 0; left: 0;
   width: 100%;
 }
 
-.hero-text h1.glitch::before {
-  color: #ff0000;
+h1.glitch::before {
+  color: #ff3c00;
   animation: glitch 0.5s steps(1) forwards;
   z-index: 1;
 }
 
-.hero-text h1.glitch::after {
-  color: #00ffff;
+h1.glitch::after {
+  color: #0033ff;
   animation: glitch 0.5s steps(1) 0.05s forwards;
   z-index: 2;
 }
 
-.tagline {
-  font-family: var(--font-main);
-  font-size: 13px;
-  margin: 6px 0 10px;
+.hero-sub {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 480px;
+  margin-bottom: 24px;
   color: #333;
 }
 
 .hero-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
-.badge {
-  background: var(--accent);
-  color: #fff;
-  font-family: var(--font-main);
+.tag {
+  font-family: 'Space Mono', monospace;
   font-size: 11px;
-  padding: 2px 8px;
-  border: 1px solid #000;
+  font-weight: 700;
+  padding: 4px 10px;
+  border: 2px solid #0a0a0a;
+  background: transparent;
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.windows-grid {
-  display: grid;
-  gap: 16px;
+.avatar-frame {
+  border: 3px solid #0a0a0a;
+  box-shadow: 8px 8px 0 #0a0a0a;
+  flex-shrink: 0;
 }
 
-.content-window {
-  animation: floatUp 0.3s ease both;
+.avatar {
+  width: 200px;
+  height: 200px;
+  display: block;
+  filter: grayscale(20%);
 }
 
-.anim-in {
-  animation: floatUp 0.25s ease both;
+/* MAIN */
+main {
+  flex: 1;
+  padding: 48px 32px;
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-.about-text {
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 18px;
+.section { animation: floatUp 0.3s ease both; }
+.anim-in { animation: floatUp 0.25s ease both; }
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #ff3c00;
+  margin-bottom: 28px;
+  border-left: 4px solid #ff3c00;
+  padding-left: 10px;
 }
 
-.about-stats {
+.body-text {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 36px;
+  max-width: 640px;
+}
+
+.stats-row {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.stat-box {
-  padding: 14px 20px;
+.stat {
+  padding: 20px 28px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 90px;
+  min-width: 110px;
 }
 
 .stat-num {
-  font-family: var(--font-display);
-  font-size: 32px;
-  color: var(--accent);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 40px;
+  font-weight: 900;
   line-height: 1;
+  color: #ff3c00;
 }
 
 .stat-label {
-  font-size: 10px;
-  text-align: center;
-  margin-top: 2px;
+  font-size: 11px;
+  margin-top: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
+/* SKILLS */
 .skill-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 14px;
+  margin-bottom: 18px;
   animation: floatUp 0.3s ease both;
 }
 
 .skill-name {
   font-size: 12px;
-  width: 120px;
+  font-weight: 700;
+  width: 130px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.skill-bar-bg {
+.skill-track {
   flex: 1;
-  height: 16px;
+  height: 14px;
+  background: #e8e3db;
+  border: 2px solid #0a0a0a;
   overflow: hidden;
-  background: #fff;
 }
 
-.skill-bar-fill {
+.skill-fill {
   height: 100%;
-  background: var(--accent);
+  background: #0a0a0a;
   width: 0%;
-  animation: fillBar 1s ease forwards;
+  animation: fillBar 1.1s ease forwards;
 }
 
 .skill-pct {
   font-size: 12px;
-  width: 36px;
+  font-weight: 700;
+  width: 38px;
   text-align: right;
 }
 
-.projects-soon {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--accent);
-  padding: 24px 0;
+/* PROJECTS */
+.soon {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #0a0a0a;
+  padding: 32px 0;
+  letter-spacing: -1px;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .project-card {
   display: block;
-  padding: 14px;
+  padding: 20px;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.15s;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .project-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--accent);
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 #0a0a0a;
 }
 
 .project-title {
-  font-family: var(--font-display);
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 20px;
-  color: var(--accent);
-  margin-bottom: 4px;
+  font-weight: 900;
+  margin-bottom: 6px;
 }
 
 .project-desc {
   font-size: 12px;
-  margin-bottom: 8px;
-  line-height: 1.4;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: #444;
 }
 
-.project-tags {
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* CONTACT */
+.contact-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 14px;
+  padding-top: 8px;
 }
 
-.contact-links {
+/* FOOTER */
+footer {
+  border-top: 3px solid #0a0a0a;
+  padding: 18px 32px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  background: #0a0a0a;
+  color: #f5f0e8;
 }
 
-.contact-btn {
-  text-decoration: none;
-  font-size: 13px;
-  padding: 10px 20px;
+.footer-mono {
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #ff3c00;
 }
 
-@media (max-width: 500px) {
-  .desktop {
-    padding: 14px 14px 80px;
-  }
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .hero-badges { justify-content: center; }
-  .about-stats { justify-content: center; }
-  .skill-name { width: 80px; font-size: 11px; }
+@media (max-width: 600px) {
+  nav { padding: 14px 16px; }
+  .hero { padding: 36px 16px 32px; flex-direction: column; }
+  .avatar { width: 140px; height: 140px; }
+  main { padding: 32px 16px; }
+  footer { padding: 14px 16px; }
+  .skill-name { width: 90px; font-size: 11px; }
 }
 </style>

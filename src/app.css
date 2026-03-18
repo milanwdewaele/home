@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,154 +7,113 @@
 }
 
 :root {
-  --bg: #008080;
-  --win-bg: #c0c0c0;
-  --win-border-light: #ffffff;
-  --win-border-dark: #808080;
-  --win-border-darker: #404040;
-  --titlebar-bg: #000080;
-  --titlebar-text: #ffffff;
-  --text: #000000;
-  --accent: #000080;
-  --font-main: 'Share Tech Mono', monospace;
-  --font-display: 'VT323', monospace;
-  --scanline: rgba(0,0,0,0.03);
+  --bg: #f5f0e8;
+  --fg: #0a0a0a;
+  --accent: #ff3c00;
+  --accent2: #0033ff;
+  --border: 3px solid #0a0a0a;
+  --font-body: 'Space Mono', monospace;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
 html, body {
   min-height: 100vh;
   background: var(--bg);
-  font-family: var(--font-main);
-  color: var(--text);
+  font-family: var(--font-body);
+  color: var(--fg);
   overflow-x: hidden;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    var(--scanline) 0px,
-    var(--scanline) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  pointer-events: none;
-  z-index: 9999;
-  animation: scanroll 8s linear infinite;
+.panel {
+  background: #fff;
+  border: var(--border);
+  box-shadow: 6px 6px 0 var(--fg);
 }
 
-@keyframes scanroll {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 100vh; }
+.panel-accent {
+  background: var(--accent);
+  border: var(--border);
+  box-shadow: 6px 6px 0 var(--fg);
+  color: #fff;
 }
 
-.win95 {
-  background: var(--win-bg);
-  border-top: 2px solid var(--win-border-light);
-  border-left: 2px solid var(--win-border-light);
-  border-right: 2px solid var(--win-border-darker);
-  border-bottom: 2px solid var(--win-border-darker);
-  box-shadow: inset -1px -1px 0 var(--win-border-dark),
-              inset 1px 1px 0 var(--win-border-light);
-}
-
-.titlebar {
-  background: var(--titlebar-bg);
-  color: var(--titlebar-text);
-  font-family: var(--font-main);
+.btn {
+  background: var(--fg);
+  color: var(--bg);
+  border: var(--border);
+  font-family: var(--font-body);
   font-size: 13px;
-  padding: 3px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
-}
-
-.titlebar-btns {
-  display: flex;
-  gap: 2px;
-}
-
-.titlebar-btn {
-  width: 16px;
-  height: 14px;
-  background: var(--win-bg);
-  border-top: 1px solid var(--win-border-light);
-  border-left: 1px solid var(--win-border-light);
-  border-right: 1px solid var(--win-border-darker);
-  border-bottom: 1px solid var(--win-border-darker);
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 700;
+  padding: 10px 22px;
   cursor: pointer;
-  font-family: var(--font-main);
-}
-
-.btn95 {
-  background: var(--win-bg);
-  border-top: 2px solid var(--win-border-light);
-  border-left: 2px solid var(--win-border-light);
-  border-right: 2px solid var(--win-border-darker);
-  border-bottom: 2px solid var(--win-border-darker);
-  font-family: var(--font-main);
-  font-size: 13px;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: filter 0.1s;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 0.08s, box-shadow 0.08s;
+  box-shadow: 4px 4px 0 var(--accent);
 }
 
-.btn95:active {
-  border-top: 2px solid var(--win-border-darker);
-  border-left: 2px solid var(--win-border-darker);
-  border-right: 2px solid var(--win-border-light);
-  border-bottom: 2px solid var(--win-border-light);
-  transform: translate(1px, 1px);
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent);
 }
 
-.btn95:hover {
-  filter: brightness(1.05);
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--fg);
+  border: var(--border);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 0.08s, box-shadow 0.08s, background 0.08s;
+  box-shadow: 4px 4px 0 var(--fg);
+}
+
+.btn-outline:hover {
+  background: var(--fg);
+  color: var(--bg);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent);
+}
+
+@keyframes floatUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50%       { opacity: 0; }
 }
 
 .blink { animation: blink 1s step-end infinite; }
 
-@keyframes glitch {
-  0%   { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
-  10%  { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
-  20%  { clip-path: inset(70% 0 10% 0); transform: translate(-1px, 0); }
-  30%  { clip-path: inset(10% 0 80% 0); transform: translate(1px, 0); }
-  40%  { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 0); }
-  50%  { clip-path: inset(20% 0 60% 0); transform: translate(2px, 0); }
-  100% { clip-path: inset(0 0 0 0); transform: translate(0, 0); }
-}
-
-@keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-@keyframes floatUp {
-  0%   { transform: translateY(30px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg); }
-  25%       { transform: rotate(-3deg); }
-  75%       { transform: rotate(3deg); }
-}
-
 @keyframes fillBar {
   from { width: 0%; }
   to   { width: var(--target-w); }
+}
+
+@keyframes glitch {
+  0%   { clip-path: inset(0 0 95% 0); transform: translate(-3px, 0); }
+  20%  { clip-path: inset(30% 0 50% 0); transform: translate(3px, 0); }
+  40%  { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 0); }
+  60%  { clip-path: inset(10% 0 80% 0); transform: translate(2px, 0); }
+  80%  { clip-path: inset(50% 0 30% 0); transform: translate(-3px, 0); }
+  100% { clip-path: inset(0 0 0 0); transform: translate(0, 0); }
 }
