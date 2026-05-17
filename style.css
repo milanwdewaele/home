@@ -52,6 +52,9 @@ small {
     color: #95a5a6;
     margin-top: 24px;
     text-align: center;
+    width: 100vw;
+    position: fixed;
+    bottom: 10px;
 }
 
 @media (max-width: 640px) {
